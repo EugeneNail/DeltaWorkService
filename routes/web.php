@@ -13,9 +13,9 @@ use App\Http\Controllers\Admin\QualityController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserServiceController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Middleware\PassportFilesMiddleware;
+use App\Http\Controllers\User\UserServiceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -102,9 +102,9 @@ Route::middleware(['auth', 'verify_phone', 'after_verify'])->group(function () {
             return Inertia::render('User/Services');
         })->name('services');
 
-        Route::get('/services/create', function () {
-            return Inertia::render('User/EditService');
-        })->name('services.create');
+        Route::get('/services/create', [UserServiceController::class, 'create'])->name('services.create');
+
+        Route::post('/services', [UserServiceController::class,'store'])->name('services.store');
 
         Route::get('/services/update', function () {
             return Inertia::render('User/EditService');

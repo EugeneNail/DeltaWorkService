@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreUserServiceRequest;
+use App\Models\Service;
 use App\Models\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,17 +33,25 @@ class UserServiceController extends Controller
         // Нужно отдать фронту список, отобранных по языку услуг ($services) из админки
         // (таблица: services)
 
-        return Inertia::render('User/EditService'); // в метод render передать данные ($services)
+        $services = Service::all();
+        return Inertia::render('User/EditService', compact('services')); // в метод render передать данные ($services)
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserServiceRequest $request)
     {
+        dd($request);
         // Валидация нужных полей (смотреть в таблице user_services) и запись в БД
 
+
         return Redirect::route('user.services.index');
+        // UserService::query()->create($request->validated());
+
+        // return Redirect::route('admin.services.index')->with([
+        //     'message' => trans('service.created'),
+        // ]);;
     }
 
     /**
@@ -59,8 +69,8 @@ class UserServiceController extends Controller
     {
         // Нужно отдать фронту список, отобранных по языку услуг ($services) из админки и услугу пользователя, которую мы обновляем
         // (таблица: services, user_services)
-
         return Inertia::render('User/EditService'); // в метод render передать данные ($services, $userServices)
+
     }
 
     /**
@@ -78,7 +88,7 @@ class UserServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        
+
         // Удаляем запись в бд
     }
 }
