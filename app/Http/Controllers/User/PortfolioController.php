@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePortfolioRequest;
 use App\Models\Portfolio;
+use App\Models\Service;
+use App\Models\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,15 +35,28 @@ class PortfolioController extends Controller
         // Нужно отдать фронту список услуг ($services) из админки
         // (таблица: services)
 
-        return Inertia::render('User/Portfolio/EditPortfolio'); // в метод render передать данные ($services)
+        $services = Service::all()->map(fn ($service) => $service->localized());
+
+        return Inertia::render('User/Portfolio/EditPortfolio', compact('services')); // в метод render передать данные ($services)
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePortfolioRequest $request)
     {
         // Валидация нужных полей (смотреть в таблице portfolios) и запись в БД
+
+        $photo = $request->file('photo');
+        $name = uniqid() . '.' . $photo->getClientOriginalExtension();
+        $photo->storeAs('public', $name);
+
+        $data = $request->validated();
+        Portfolio::create([
+            'user_id' => $request->user()->id,
+            'service_name' => Service::find($data['service_id'])->name,
+            'photo' => asset('storage/' . $name)
+        ] + $data);
 
         return Redirect::route('user.portfolio.index');
     }
