@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DestroyUserServiceRequest;
 use App\Http\Requests\UpdateUserServiceRequest;
 use App\Http\Requests\User\StoreUserServiceRequest;
 use App\Models\Service;
@@ -93,8 +94,10 @@ class UserServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserService $userService)
+    public function destroy(DestroyUserServiceRequest $request, UserService $userService)
     {
+        $userService->delete();
 
+        return Redirect::route('user.services');
     }
 }

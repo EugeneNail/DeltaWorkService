@@ -106,6 +106,7 @@ Route::middleware(['auth', 'verify_phone', 'after_verify'])->group(function () {
 
         Route::get('/services/{userService}/edit', [UserServiceController::class, 'edit'])->name('services.edit');
         Route::put('/services/{service}', [UserServiceController::class, 'update'])->name('services.update');
+        Route::delete('/services/{userService}', [UserServiceController::class, 'destroy'])->name('services.destroy');
 
     });
 
