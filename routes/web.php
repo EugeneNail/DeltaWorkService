@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PassportController;
 use App\Http\Controllers\Admin\QualityController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\User\PortfolioController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Middleware\PassportFilesMiddleware;
@@ -98,16 +99,7 @@ Route::middleware(['auth', 'verify_phone', 'after_verify'])->group(function () {
         Route::post('/profile/passport', [ProfileController::class, 'storePassport']);
             // ->name('passport');
 
-        Route::get('/services', [UserServiceController::class, 'index'])->name('services');
-
-        Route::get('/services/create', [UserServiceController::class, 'create'])->name('services.create');
-
-        Route::post('/services', [UserServiceController::class,'store'])->name('services.store');
-
-        Route::get('/services/{userService}/edit', [UserServiceController::class, 'edit'])->name('services.edit');
-        Route::put('/services/{service}', [UserServiceController::class, 'update'])->name('services.update');
-        Route::delete('/services/{userService}', [UserServiceController::class, 'destroy'])->name('services.destroy');
-
+        Route::resource('/services', UserServiceController::class);
     });
 
     // admin's part

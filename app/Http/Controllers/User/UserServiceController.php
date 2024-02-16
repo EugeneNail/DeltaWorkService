@@ -54,7 +54,7 @@ class UserServiceController extends Controller
             'user_id' => $request->user()->id
         ]);
 
-        return Redirect::route('user.services')->with([
+        return Redirect::route('user.services.index')->with([
             'message' => trans('service.created'),
         ]);;
     }
@@ -70,14 +70,17 @@ class UserServiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(UserService $userService)
+    public function edit(UserService $service)
     {
         // Нужно отдать фронту список, отобранных по языку услуг ($services) из админки и услугу пользователя, которую мы обновляем
         // (таблица: services, user_services)
 
         $services = Service::all()->map(fn ($service) => $service->localized());
 
-        return Inertia::render('User/EditService', compact('userService', 'services')); // в метод render передать данные ($services, $userServices)
+        return Inertia::render('User/EditService', [
+            'userService' => $service,
+            'services' => $services
+        ]); // в метод render передать данные ($services, $userServices)
 
     }
 
@@ -88,16 +91,16 @@ class UserServiceController extends Controller
     {
         // Валидация нужных полей (смотреть в таблице user_services) и запись в БД
         $service->update($request->validated());
-        return Redirect::route('user.services');
+        return Redirect::route('user.services.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DestroyUserServiceRequest $request, UserService $userService)
+    public function destroy(DestroyUserServiceRequest $request, UserService $service)
     {
-        $userService->delete();
+        $service->delete();
 
-        return Redirect::route('user.services');
+        return Redirect::route('user.services.index');
     }
 }

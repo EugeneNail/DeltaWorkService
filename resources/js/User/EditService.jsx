@@ -226,7 +226,7 @@ export default function EditService({ userService, services }) {
                     <CancelButton
                         className=""
                         label={t("common:action.cancel")}
-                        onClick={() => router.get(route("user.services"))}
+                        onClick={() => router.get(route("user.services.index"))}
                     />
                     <ActionButton
                         className=""

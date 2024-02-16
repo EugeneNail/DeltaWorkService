@@ -13,7 +13,7 @@ class DestroyUserServiceRequest extends FormRequest
     {
         $user = request()->user();
         $isAdmin = $user->roles()->where('name', 'admin')->count() != 0;
-        $isOwner = $user->userServices->where('id', request()->route('userService')->id);
+        $isOwner = $user->userServices->where('id', request()->route('service')->id);
 
         return $isAdmin || $isOwner;
     }
