@@ -24,7 +24,9 @@ class PortfolioController extends Controller
         // Нужно отдать фронту список ($portfolios) всех портфолио конкретного пользователя вместе с услугами из админки
         // (таблицы: users, user_services, users)
 
-        return Inertia::render('User/Portfolio/index');// в метод render передать данные
+        $portfolios = Portfolio::where('user_id', request()->user()->id)->get();
+
+        return Inertia::render('User/Portfolio/index', compact('portfolios'));// в метод render передать данные
     }
 
     /**
