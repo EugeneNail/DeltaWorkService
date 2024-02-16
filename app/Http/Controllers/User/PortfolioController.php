@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DeletePortfolioRequest;
 use App\Http\Requests\StorePortfolioRequest;
 use App\Http\Requests\UpdatePortfolioRequest;
 use App\Models\Portfolio;
@@ -94,18 +95,12 @@ class PortfolioController extends Controller
         $portfolio->fill($request->except('photo'));
 
         if($request->hasFile('photo')) {
-            $fileToDelete = str_replace(asset('storage/').'/', '', $portfolio->photo);
-
-            $photo = $request->file('photo');
-            $name = uniqid() . '.' . $photo->getClientOriginalExtension();
-            $photo->storeAs('public', $name);
-
+            $name = $this->savePhoto($request);
+            $this->deletePhoto($portfolio);
             $portfolio->photo = asset('storage/' . $name);
-            Storage::disk('public')->delete($fileToDelete);
         }
 
         $portfolio->save();
-
 
         return Redirect::route('user.portfolio.index');
     }
@@ -113,8 +108,26 @@ class PortfolioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DeletePortfolioRequest $request, Portfolio $portfolio)
     {
-        // Удаляем запись в бд
+        $portfolio->delete();
+        $this->deletePhoto($portfolio);
+
+        return Redirect::route('user.portfolio.index');
+    }
+
+
+    private function savePhoto(Request $request): string {
+        $photo = $request->file('photo');
+        $name = uniqid() . '.' . $photo->getClientOriginalExtension();
+        $photo->storeAs('public', $name);
+
+        return $name;
+    }
+
+
+    private function deletePhoto(Portfolio $portfolio) {
+        $fileToDelete = str_replace(asset('storage/').'/', '', $portfolio->photo);
+        Storage::disk('public')->delete($fileToDelete);
     }
 }
