@@ -17,7 +17,7 @@ class UpdatePortfolioRequest extends FormRequest
         $isAdmin = $user->roles()->where('name', 'admin')->count() != 0;
         $isOwner = Portfolio::query()
             ->where('user_id', $user->id)
-            ->where('id', request()->route('portfolio'))
+            ->where('id', request()->route('portfolio')->id)
             ->count() !== 0;
 
         return $isAdmin || $isOwner;
@@ -32,9 +32,18 @@ class UpdatePortfolioRequest extends FormRequest
     {
         return [
             'description' => ['nullable','string','min:1', 'max:250'],
-            'photo' => ['required', File::types(['png', 'jpg', 'jpeg', 'gif'])->max(1024 * 3)],
+            'photo' => ['nullable', File::types(['png', 'jpg', 'jpeg', 'gif'])->max(1024 * 3)],
             'service_id' => ['required','numeric', 'integer','exists:services,id'],
             'price' => ['required', 'numeric', 'decimal:0,2', 'gt:0', 'lte:10000000'],
         ];
+    }
+
+
+    public function prepareForValidation() {
+        if (str_starts_with($this->photo, 'http')) {
+            $this->merge([
+                'photo' => null
+            ]);
+        }
     }
 }

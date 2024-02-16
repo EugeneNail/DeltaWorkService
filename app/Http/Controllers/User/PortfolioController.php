@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePortfolioRequest;
+use App\Http\Requests\UpdatePortfolioRequest;
 use App\Models\Portfolio;
 use App\Models\Service;
 use App\Models\UserService;
@@ -74,20 +75,37 @@ class PortfolioController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Portfolio $portfolio)
     {
         // Нужно отдать фронту список, отобранных по языку услуг ($services) из админки и портфолио пользователя, которое мы обновляем
         // (таблица: services, portfolios)
 
-        return Inertia::render('User/Portfolio/EditPortfolio'); // в метод render передать данные ($services, $portfolio)
+        $services = Service::all()->map(fn ($service) => $service->localized());
+
+        return Inertia::render('User/Portfolio/EditPortfolio', compact('services', 'portfolio')); // в метод render передать данные ($services, $portfolio)
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserService $service)
+    public function update(UpdatePortfolioRequest $request, Portfolio $portfolio)
     {
         // Валидация нужных полей (смотреть в таблице portfolios) и запись в БД
+        $portfolio->fill($request->except('photo'));
+
+        if($request->hasFile('photo')) {
+            $fileToDelete = str_replace(asset('storage/').'/', '', $portfolio->photo);
+
+            $photo = $request->file('photo');
+            $name = uniqid() . '.' . $photo->getClientOriginalExtension();
+            $photo->storeAs('public', $name);
+
+            $portfolio->photo = asset('storage/' . $name);
+            Storage::disk('public')->delete($fileToDelete);
+        }
+
+        $portfolio->save();
+
 
         return Redirect::route('user.portfolio.index');
     }
