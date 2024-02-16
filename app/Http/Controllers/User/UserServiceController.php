@@ -33,7 +33,7 @@ class UserServiceController extends Controller
         // Нужно отдать фронту список, отобранных по языку услуг ($services) из админки
         // (таблица: services)
 
-        $services = Service::all();
+        $services = Service::all()->map(fn ($service) => $service->localized());
         return Inertia::render('User/EditService', compact('services')); // в метод render передать данные ($services)
     }
 
@@ -42,16 +42,15 @@ class UserServiceController extends Controller
      */
     public function store(StoreUserServiceRequest $request)
     {
-        dd($request);
         // Валидация нужных полей (смотреть в таблице user_services) и запись в БД
 
+        UserService::query()->create($request->validated() + [
+            'user_id' => $request->user()->id
+        ]);
 
-        return Redirect::route('user.services.index');
-        // UserService::query()->create($request->validated());
-
-        // return Redirect::route('admin.services.index')->with([
-        //     'message' => trans('service.created'),
-        // ]);;
+        return Redirect::route('user.services')->with([
+            'message' => trans('service.created'),
+        ]);;
     }
 
     /**
