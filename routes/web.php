@@ -104,9 +104,9 @@ Route::middleware(['auth', 'verify_phone', 'after_verify'])->group(function () {
 
         Route::post('/services', [UserServiceController::class,'store'])->name('services.store');
 
-        Route::get('/services/update', function () {
-            return Inertia::render('User/EditService');
-        })->name('services.edit');
+        Route::get('/services/{userService}/edit', [UserServiceController::class, 'edit'])->name('services.edit');
+        Route::put('/services/{service}', [UserServiceController::class, 'update'])->name('services.update');
+
     });
 
     // admin's part

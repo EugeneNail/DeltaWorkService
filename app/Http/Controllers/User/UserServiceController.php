@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateUserServiceRequest;
 use App\Http\Requests\User\StoreUserServiceRequest;
 use App\Models\Service;
 use App\Models\UserService;
@@ -68,30 +69,32 @@ class UserServiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(UserService $userService)
     {
         // Нужно отдать фронту список, отобранных по языку услуг ($services) из админки и услугу пользователя, которую мы обновляем
         // (таблица: services, user_services)
-        return Inertia::render('User/EditService'); // в метод render передать данные ($services, $userServices)
+
+        $services = Service::all()->map(fn ($service) => $service->localized());
+
+        return Inertia::render('User/EditService', compact('userService', 'services')); // в метод render передать данные ($services, $userServices)
 
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, UserService $service)
+    public function update(UpdateUserServiceRequest $request, UserService $service)
     {
         // Валидация нужных полей (смотреть в таблице user_services) и запись в БД
-
-        return Redirect::route('user.services.index');
+        $service->update($request->validated());
+        return Redirect::route('user.services');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(UserService $userService)
     {
 
-        // Удаляем запись в бд
     }
 }
