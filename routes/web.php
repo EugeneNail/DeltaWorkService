@@ -98,9 +98,7 @@ Route::middleware(['auth', 'verify_phone', 'after_verify'])->group(function () {
         Route::post('/profile/passport', [ProfileController::class, 'storePassport']);
             // ->name('passport');
 
-        Route::get('/services', function () {
-            return Inertia::render('User/Services');
-        })->name('services');
+        Route::get('/services', [UserServiceController::class, 'index'])->name('services');
 
         Route::get('/services/create', [UserServiceController::class, 'create'])->name('services.create');
 

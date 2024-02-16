@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -58,6 +59,12 @@ class User extends Authenticatable
         'password' => 'hashed',
         'local' => 'string',
     ];
+
+
+    public function userServices(): HasMany {
+        return $this->hasMany(UserService::class);
+    }
+
 
     public function getAvatarAttribute() : string|null
     {

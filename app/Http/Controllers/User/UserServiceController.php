@@ -22,7 +22,11 @@ class UserServiceController extends Controller
         // Нужно отдать фронту список ($userServices) услуг конкретного пользователя вместе с услугами из админки
         // (таблицы: users, user_services, users)
 
-        return Inertia::render('User/Services'); // в метод render передать данные
+        $user = request()->user();
+        $user->load('userServices.service');
+        $userServices = $user->userServices;
+
+        return Inertia::render('User/Services', compact('userServices')); // в метод render передать данные
     }
 
     /**
